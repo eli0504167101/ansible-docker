@@ -23,6 +23,60 @@ The setup consists of two main components running in a dedicated Docker network:
 ---
 
 ## 🚀 Step-by-Step Implementation
+```
+mkdir ansible-docker-lab && cd ansible-docker-lab
+docker network create ansible-net
+
+cat <<EOF > Dockerfile.master
+FROM ubuntu:22.04
+RUN apt update && apt install -y \\
+    ansible \\
+    openssh-client \\
+    python3 \\
+    sshpass
+WORKDIR /ansible
+CMD ["bash"]
+EOF
+
+cat <<EOF > Dockerfile.slave
+FROM ubuntu:22.04
+RUN apt update && apt install -y \\
+    openssh-server \\
+    python3 && \\
+    mkdir /var/run/sshd 
+RUN useradd -m user && echo "user:1234" | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+EOF
+
+docker build -t ansible-master -f Dockerfile.master .
+docker build -t ansible-slave -f Dockerfile.slave .
+
+docker run -d --name slave-node --network ansible-net ansible-slave
+docker run -it --name master-node --network ansible-net ansible-master bash
+
+docker ps
+
+docker inspect slave | grep IPAddress
+
+docker exec -it master bash
+ssh-keygen
+ssh-copy-id user@"id"
+1234
+ssh user@"id"
+
+cat <<EOF > inventory.yaml
+all:
+  hosts:
+    slave-node:
+      ansible_host: "id"
+      ansible_user: user
+      ansible_password: 1234
+EOF
+
+ansible all -i inventory.yaml -m ping
+```
 
 ### 1. Infrastructure Setup
 * **Networking:** Created a dedicated Docker network (`ansible-net`) to allow container communication by name/IP.
