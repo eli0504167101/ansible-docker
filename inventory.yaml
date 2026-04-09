@@ -1,0 +1,7 @@
+all:
+  hosts:
+    slave-node:
+      ansible_host: 172.18.0.3  
+      ansible_user: user        
+      ansible_password: 1234    
+
