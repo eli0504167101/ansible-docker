@@ -5,12 +5,12 @@
 
 A lightweight lab simulating a Master-Slave architecture using Docker containers.
 
-## 🏗️ Architecture
+## Architecture
 * **Master (Control Node):** Ubuntu 22.04 with Ansible & OpenSSH client.
 * **Slave (Managed Node):** Ubuntu 22.04 with OpenSSH server & Python3.
 * **Networking:** Dedicated Docker network (`ansible-net`).
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Setup Infrastructure
 ```bash
@@ -46,10 +46,7 @@ all:
 ansible all -i inventory.yaml -m ping
 ```
 
-## 🛠️ Key Concepts Demonstrated
-* **Agentless Management:** Managing nodes via SSH/Python without local Ansible installation.
-* **Infrastructure as Code:** Using Dockerfiles to standardize environments.
-* **Linux Security:** Non-root user management and SSH key authentication.
+
 
 ---
 
